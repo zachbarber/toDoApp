@@ -41,7 +41,18 @@ export class ToDoService implements IToDoService {
             return result;
         } 
 
-        //do query to add just title
+        let result = null;
+
+            await this.pg.connect();
+
+            await this.pg
+            .query('INSERT INTO todos (title, createdAt) VALUES ($1, now()) RETURNING *', 
+            [toDo.title])
+            .then(res => {
+                result = res.rows[0];
+            });
+
+            return result;
     }
 
     public async get(filterOptions?: FilterOptions[]): Promise<Array<ToDo>> {
